@@ -12,8 +12,8 @@ export const EMPRESA = {
   // Chave PIX real da empresa (defina PIX_KEY no ambiente de produção).
   chavePix: process.env.PIX_KEY ?? "SUA_CHAVE_PIX_AQUI",
   // Número do WhatsApp que RECEBE os pedidos, formato internacional só com
-  // dígitos (ex.: "5515999998888"). Defina WHATSAPP_NUMERO em produção.
-  whatsapp: process.env.WHATSAPP_NUMERO ?? "5515999998888",
+  // dígitos: 55 (Brasil) + DDD + número. Pode sobrescrever com WHATSAPP_NUMERO.
+  whatsapp: process.env.WHATSAPP_NUMERO ?? "5515998512564",
   horario: "Seg à Sáb - 08:00 as 18:00",
   // Endereço da loja, mostrado na mensagem quando o pedido é RETIRADA.
   endereco: "Alameda Celidônio do Monte, 757 · Sorocaba - SP",
