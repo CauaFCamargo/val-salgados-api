@@ -3,8 +3,18 @@ import { PEDIDO_MINIMO_UNIDADES } from "../config/empresa";
 
 export const criarPedidoSchema = z
   .object({
-    clienteNome: z.string().min(1, "Nome é obrigatório"),
-    telefone: z.string().min(8, "Telefone inválido"),
+    clienteNome: z
+      .string()
+      .trim()
+      .min(1, "Nome é obrigatório")
+      .max(30, "O nome pode ter no máximo 30 caracteres"),
+
+    // O front manda formatado — "(15) 99851-2564" —, então validamos pela
+    // quantidade de DÍGITOS: 10 = fixo com DDD, 11 = celular com DDD.
+    telefone: z.string().refine((valor) => {
+      const digitos = valor.replace(/\D/g, "");
+      return digitos.length === 10 || digitos.length === 11;
+    }, "Telefone inválido: informe DDD + número"),
 
     // Entrega x Retirada. O endereço vem opcional aqui e a obrigatoriedade
     // "de verdade" é decidida lá embaixo no superRefine, conforme o tipo.

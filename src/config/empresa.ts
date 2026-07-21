@@ -18,8 +18,10 @@ export const EMPRESA = {
   // Endereço da loja, mostrado na mensagem quando o pedido é RETIRADA.
   endereco: "Alameda Celidônio do Monte, 757 · Sorocaba - SP",
   // URL pública do front, usada no link "acompanhe seu pedido".
-  // Em produção, defina APP_URL com a URL do Vercel.
-  appUrl: process.env.APP_URL ?? "http://localhost:5173",
+  // O padrão é a URL de produção (Vercel) porque é o link que vai pro cliente
+  // no WhatsApp — localhost só funcionaria na máquina do desenvolvedor.
+  // Pode sobrescrever com APP_URL (ex.: http://localhost:5173 em dev).
+  appUrl: process.env.APP_URL ?? "https://val-salgados-front.vercel.app",
 } as const;
 
 // A Val NÃO cobra pela entrega — o delivery é grátis. Por isso a taxa é sempre 0.

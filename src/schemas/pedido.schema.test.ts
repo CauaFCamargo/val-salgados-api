@@ -55,6 +55,38 @@ describe("criarPedidoSchema", () => {
     expect(r.success).toBe(false);
   });
 
+  // --- Nome e telefone ------------------------------------------------------
+
+  it("rejeita nome com mais de 30 caracteres", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, clienteNome: "a".repeat(31) });
+    expect(r.success).toBe(false);
+  });
+
+  it("aceita nome com exatamente 30 caracteres", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, clienteNome: "a".repeat(30) });
+    expect(r.success).toBe(true);
+  });
+
+  it("aceita telefone formatado com máscara", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, telefone: "(15) 99851-2564" });
+    expect(r.success).toBe(true);
+  });
+
+  it("aceita telefone fixo (10 dígitos)", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, telefone: "(15) 3221-4455" });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejeita telefone com dígitos de menos", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, telefone: "15998" });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejeita telefone com dígitos demais", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, telefone: "159985125649999" });
+    expect(r.success).toBe(false);
+  });
+
   // --- Pedido mínimo de 30 unidades -----------------------------------------
 
   it("rejeita pedido abaixo de 30 unidades", () => {

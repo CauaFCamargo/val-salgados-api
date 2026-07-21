@@ -61,7 +61,6 @@ export function montarMensagemWhatsapp(pedido: PedidoParaMensagem): string {
   }
 
   linhas.push(LINHA);
-  linhas.push(`Itens: ${real(pedido.subtotal)}`);
   // Só faz sentido falar de entrega quando é ENTREGA. A Val não cobra: "Grátis".
   if (pedido.tipoEntrega === "ENTREGA") {
     linhas.push(
