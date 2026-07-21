@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PEDIDO_MINIMO_UNIDADES } from "../config/empresa";
 
 export const criarPedidoSchema = z
   .object({
@@ -46,6 +47,18 @@ export const criarPedidoSchema = z
         code: "custom",
         path: ["trocoPara"],
         message: "Troco só se aplica a pagamento em dinheiro",
+      });
+    }
+
+    // 3) Pedido mínimo: soma das QUANTIDADES de todos os itens, não a
+    //    quantidade de produtos diferentes. Então 30 coxinhas vale, e
+    //    10 coxinhas + 10 esfihas + 10 empadas também vale.
+    const unidades = dados.itens.reduce((soma, item) => soma + item.quantidade, 0);
+    if (unidades < PEDIDO_MINIMO_UNIDADES) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["itens"],
+        message: `O pedido mínimo é de ${PEDIDO_MINIMO_UNIDADES} unidades (o seu tem ${unidades}).`,
       });
     }
   });

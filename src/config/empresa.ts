@@ -25,3 +25,7 @@ export const EMPRESA = {
 // A Val NÃO cobra pela entrega — o delivery é grátis. Por isso a taxa é sempre 0.
 // Mantemos o campo no banco caso um dia isso mude, mas hoje a regra é: grátis.
 export const TAXA_ENTREGA = 0;
+
+// Pedido mínimo: 30 unidades NO TOTAL, podendo misturar produtos
+// (ex.: 10 coxinhas + 10 esfihas + 10 empadas, ou 30 de um item só).
+export const PEDIDO_MINIMO_UNIDADES = 30;
