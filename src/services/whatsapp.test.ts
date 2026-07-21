@@ -13,6 +13,7 @@ const pedidoBase = {
   numeroEndereco: "123",
   bairro: "Centro",
   cidade: "Sorocaba",
+  cep: "18103-000",
   complemento: null as string | null,
   formaPagamento: "PIX",
   trocoPara: null as number | null,

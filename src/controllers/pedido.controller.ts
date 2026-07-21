@@ -45,6 +45,7 @@ export async function criarPedido(req: Request, res: Response) {
             numeroEndereco: dados.numeroEndereco,
             bairro: dados.bairro,
             cidade: dados.cidade,
+            cep: dados.cep,
             complemento: dados.complemento,
           }
         : {
@@ -52,6 +53,7 @@ export async function criarPedido(req: Request, res: Response) {
             numeroEndereco: null,
             bairro: null,
             cidade: null,
+            cep: null,
             complemento: null,
           }),
       formaPagamento: dados.formaPagamento,

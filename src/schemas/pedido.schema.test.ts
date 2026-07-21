@@ -29,6 +29,7 @@ describe("criarPedidoSchema", () => {
     numeroEndereco: "123",
     bairro: "Centro",
     cidade: "Sorocaba",
+    cep: "18103-000",
   };
 
   it("aceita ENTREGA com o endereço completo", () => {
@@ -61,6 +62,33 @@ describe("criarPedidoSchema", () => {
       bairro: undefined,
     });
     expect(r.success).toBe(false);
+  });
+
+  it("rejeita ENTREGA sem CEP", () => {
+    const r = criarPedidoSchema.safeParse({
+      ...base,
+      ...enderecoCompleto,
+      cep: "",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejeita CEP com número errado de dígitos", () => {
+    const r = criarPedidoSchema.safeParse({
+      ...base,
+      ...enderecoCompleto,
+      cep: "1810-30",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("aceita CEP sem máscara (só dígitos)", () => {
+    const r = criarPedidoSchema.safeParse({
+      ...base,
+      ...enderecoCompleto,
+      cep: "18103000",
+    });
+    expect(r.success).toBe(true);
   });
 
   it("rejeita ENTREGA sem cidade", () => {

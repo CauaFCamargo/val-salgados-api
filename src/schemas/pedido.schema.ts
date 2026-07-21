@@ -24,6 +24,12 @@ export const criarPedidoSchema = z
     numeroEndereco: z.string().trim().max(10).optional(),
     bairro: z.string().trim().max(60).optional(),
     cidade: z.string().trim().max(60).optional(),
+    // Chega com máscara ("18103-000"); validamos pelos dígitos, que são 8.
+    cep: z
+      .string()
+      .trim()
+      .refine((v) => v === "" || v.replace(/\D/g, "").length === 8, "CEP inválido")
+      .optional(),
     complemento: z.string().trim().max(60).optional(),
 
     // Pagamento. `trocoPara` é o valor que o cliente vai entregar em espécie.
@@ -51,6 +57,7 @@ export const criarPedidoSchema = z
         { campo: "numeroEndereco", valor: dados.numeroEndereco, rotulo: "Número" },
         { campo: "bairro", valor: dados.bairro, rotulo: "Bairro" },
         { campo: "cidade", valor: dados.cidade, rotulo: "Cidade" },
+        { campo: "cep", valor: dados.cep, rotulo: "CEP" },
       ] as const;
 
       for (const { campo, valor, rotulo } of obrigatorios) {

@@ -21,6 +21,7 @@ interface PedidoParaMensagem {
   numeroEndereco: string | null;
   bairro: string | null;
   cidade: string | null;
+  cep: string | null;
   complemento: string | null;
   formaPagamento: string;
   trocoPara: number | null;
@@ -67,6 +68,7 @@ export function montarMensagemWhatsapp(pedido: PedidoParaMensagem): string {
 
     linhas.push(`ENDEREÇO: ${ruaNumero || "-"}`);
     if (bairroCidade) linhas.push(`Bairro/Cidade: ${bairroCidade}`);
+    if (pedido.cep) linhas.push(`CEP: ${pedido.cep}`);
     if (pedido.complemento) linhas.push(`Complemento: ${pedido.complemento}`);
   } else {
     linhas.push(`Retirada na loja: ${EMPRESA.endereco}`);

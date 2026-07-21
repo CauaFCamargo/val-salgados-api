@@ -36,6 +36,7 @@ model Pedido {
   numeroEndereco String?
   bairro         String?
   cidade         String?
+  cep            String? // guardado com máscara: "18103-000"
   complemento    String?
 
   subtotal    Float
