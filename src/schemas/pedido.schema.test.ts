@@ -22,12 +22,58 @@ describe("criarPedidoSchema", () => {
     expect(r.success).toBe(false);
   });
 
-  it("aceita ENTREGA quando tem endereço", () => {
+  // Endereço completo, usado nos testes de ENTREGA.
+  const enderecoCompleto = {
+    tipoEntrega: "ENTREGA" as const,
+    endereco: "Rua das Flores",
+    numeroEndereco: "123",
+    bairro: "Centro",
+    cidade: "Sorocaba",
+  };
+
+  it("aceita ENTREGA com o endereço completo", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, ...enderecoCompleto });
+    expect(r.success).toBe(true);
+  });
+
+  it("aceita ENTREGA com complemento (campo opcional)", () => {
     const r = criarPedidoSchema.safeParse({
       ...base,
-      tipoEntrega: "ENTREGA",
-      endereco: "Rua X, 123",
+      ...enderecoCompleto,
+      complemento: "Apto 42",
     });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejeita ENTREGA sem número", () => {
+    const r = criarPedidoSchema.safeParse({
+      ...base,
+      ...enderecoCompleto,
+      numeroEndereco: "",
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejeita ENTREGA sem bairro", () => {
+    const r = criarPedidoSchema.safeParse({
+      ...base,
+      ...enderecoCompleto,
+      bairro: undefined,
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejeita ENTREGA sem cidade", () => {
+    const r = criarPedidoSchema.safeParse({
+      ...base,
+      ...enderecoCompleto,
+      cidade: undefined,
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("RETIRADA não exige nenhum campo de endereço", () => {
+    const r = criarPedidoSchema.safeParse({ ...base, tipoEntrega: "RETIRADA" });
     expect(r.success).toBe(true);
   });
 

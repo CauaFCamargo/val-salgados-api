@@ -37,10 +37,23 @@ export async function criarPedido(req: Request, res: Response) {
       clienteNome: dados.clienteNome,
       telefone: dados.telefone,
       tipoEntrega: dados.tipoEntrega,
-      // Na retirada não há endereço; salva null em vez de string vazia.
-      endereco: dados.tipoEntrega === "ENTREGA" ? dados.endereco : null,
-      bairro: dados.bairro,
-      complemento: dados.complemento,
+      // Na retirada não há endereço; salva null em vez de string vazia — assim
+      // o banco não guarda lixo e a leitura fica sem ambiguidade.
+      ...(dados.tipoEntrega === "ENTREGA"
+        ? {
+            endereco: dados.endereco,
+            numeroEndereco: dados.numeroEndereco,
+            bairro: dados.bairro,
+            cidade: dados.cidade,
+            complemento: dados.complemento,
+          }
+        : {
+            endereco: null,
+            numeroEndereco: null,
+            bairro: null,
+            cidade: null,
+            complemento: null,
+          }),
       formaPagamento: dados.formaPagamento,
       trocoPara,
       subtotal,

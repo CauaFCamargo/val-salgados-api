@@ -21,9 +21,15 @@ model Pedido {
   // Entrega x Retirada: no RETIRADA não há endereço, por isso os campos
   // de endereço são opcionais. Qual foi a escolha fica em `tipoEntrega`.
   tipoEntrega String  @default("ENTREGA") // "ENTREGA" | "RETIRADA"
-  endereco    String?
-  bairro      String?
-  complemento String?
+  // `endereco` guarda só a rua/logradouro; número, bairro e cidade têm campos
+  // próprios pra a entregadora não precisar interpretar um texto solto.
+  endereco       String?
+  // "numeroEndereco" e não "numero" porque `numero` já é o número do PEDIDO.
+  // É texto, não inteiro: existe "123A", "s/n", "km 5".
+  numeroEndereco String?
+  bairro         String?
+  cidade         String?
+  complemento    String?
 
   subtotal    Float
   taxaEntrega Float @default(0)

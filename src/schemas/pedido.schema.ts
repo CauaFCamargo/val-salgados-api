@@ -16,12 +16,15 @@ export const criarPedidoSchema = z
       return digitos.length === 10 || digitos.length === 11;
     }, "Telefone inválido: informe DDD + número"),
 
-    // Entrega x Retirada. O endereço vem opcional aqui e a obrigatoriedade
-    // "de verdade" é decidida lá embaixo no superRefine, conforme o tipo.
+    // Entrega x Retirada. Os campos de endereço vêm opcionais aqui e a
+    // obrigatoriedade "de verdade" é decidida lá embaixo no superRefine,
+    // conforme o tipo (na RETIRADA não se pede endereço nenhum).
     tipoEntrega: z.enum(["ENTREGA", "RETIRADA"]),
-    endereco: z.string().optional(),
-    bairro: z.string().optional(),
-    complemento: z.string().optional(),
+    endereco: z.string().trim().max(120).optional(), // rua / logradouro
+    numeroEndereco: z.string().trim().max(10).optional(),
+    bairro: z.string().trim().max(60).optional(),
+    cidade: z.string().trim().max(60).optional(),
+    complemento: z.string().trim().max(60).optional(),
 
     // Pagamento. `trocoPara` é o valor que o cliente vai entregar em espécie.
     formaPagamento: z.enum(["PIX", "DINHEIRO"]),
@@ -39,16 +42,26 @@ export const criarPedidoSchema = z
   })
   // superRefine = regras que dependem de MAIS DE UM campo ao mesmo tempo.
   .superRefine((dados, ctx) => {
-    // 1) Se for ENTREGA, o endereço passa a ser obrigatório.
-    if (
-      dados.tipoEntrega === "ENTREGA" &&
-      (!dados.endereco || dados.endereco.trim() === "")
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["endereco"], // aponta o erro pro campo certo (o front destaca ele)
-        message: "Endereço é obrigatório para entrega",
-      });
+    // 1) Se for ENTREGA, os campos do endereço passam a ser obrigatórios.
+    //    Cada um aponta pro seu próprio `path` pra o front destacar o campo
+    //    certo. Complemento fica de fora: nem todo endereço tem.
+    if (dados.tipoEntrega === "ENTREGA") {
+      const obrigatorios = [
+        { campo: "endereco", valor: dados.endereco, rotulo: "Rua" },
+        { campo: "numeroEndereco", valor: dados.numeroEndereco, rotulo: "Número" },
+        { campo: "bairro", valor: dados.bairro, rotulo: "Bairro" },
+        { campo: "cidade", valor: dados.cidade, rotulo: "Cidade" },
+      ] as const;
+
+      for (const { campo, valor, rotulo } of obrigatorios) {
+        if (!valor || valor.trim() === "") {
+          ctx.addIssue({
+            code: "custom",
+            path: [campo],
+            message: `${rotulo} é obrigatório para entrega`,
+          });
+        }
+      }
     }
 
     // 2) "Troco para" só faz sentido quando o pagamento é em dinheiro.

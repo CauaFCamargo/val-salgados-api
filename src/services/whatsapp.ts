@@ -15,6 +15,10 @@ interface PedidoParaMensagem {
   telefone: string;
   tipoEntrega: string;
   endereco: string | null;
+  numeroEndereco: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  complemento: string | null;
   formaPagamento: string;
   trocoPara: number | null;
   subtotal: number;
@@ -49,7 +53,18 @@ export function montarMensagemWhatsapp(pedido: PedidoParaMensagem): string {
 
   // Entrega mostra o endereço do cliente; retirada mostra a loja.
   if (pedido.tipoEntrega === "ENTREGA") {
-    linhas.push(`Endereço: ${pedido.endereco ?? "-"}`);
+    // Rua e número na mesma linha (é assim que se lê um endereço), bairro e
+    // cidade embaixo. Complemento só aparece quando existe.
+    const ruaNumero = [pedido.endereco, pedido.numeroEndereco]
+      .filter(Boolean)
+      .join(", ");
+    const bairroCidade = [pedido.bairro, pedido.cidade]
+      .filter(Boolean)
+      .join(" - ");
+
+    linhas.push(`ENDEREÇO: ${ruaNumero || "-"}`);
+    if (bairroCidade) linhas.push(`Bairro/Cidade: ${bairroCidade}`);
+    if (pedido.complemento) linhas.push(`Complemento: ${pedido.complemento}`);
   } else {
     linhas.push(`Retirada na loja: ${EMPRESA.endereco}`);
   }
