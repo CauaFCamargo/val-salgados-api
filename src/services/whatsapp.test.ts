@@ -4,6 +4,7 @@ import { montarMensagemWhatsapp, montarLinkWhatsapp } from "./whatsapp";
 // Um pedido de exemplo pra montar a mensagem.
 const pedidoBase = {
   numero: 42,
+  token: "8f3a1c9e-4b2d-4e77-9a15-c0de7b2f1e88",
   criadoEm: new Date("2026-07-21T09:00:00"),
   clienteNome: "Ana",
   telefone: "15999998888",
@@ -22,6 +23,15 @@ const pedidoBase = {
 };
 
 describe("montarMensagemWhatsapp", () => {
+  // Guarda de segurança: o link de acompanhamento precisa usar o token
+  // aleatório. Se algum dia voltar a usar o `numero` (sequencial), qualquer
+  // pessoa conseguiria ler os pedidos dos outros contando 1, 2, 3...
+  it("usa o token, e não o número, no link de acompanhamento", () => {
+    const msg = montarMensagemWhatsapp(pedidoBase);
+    expect(msg).toContain(`/pedido/${pedidoBase.token}`);
+    expect(msg).not.toContain(`/pedido/${pedidoBase.numero}`);
+  });
+
   it("inclui número, cliente e itens", () => {
     const msg = montarMensagemWhatsapp(pedidoBase);
     expect(msg).toContain("#42");

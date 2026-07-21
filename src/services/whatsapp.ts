@@ -10,6 +10,9 @@ interface ItemParaMensagem {
 
 interface PedidoParaMensagem {
   numero: number;
+  // Token do link de acompanhamento — o link NÃO usa o número, que é
+  // sequencial e permitiria enumerar os pedidos dos outros.
+  token: string;
   criadoEm: Date;
   clienteNome: string;
   telefone: string;
@@ -45,7 +48,7 @@ export function montarMensagemWhatsapp(pedido: PedidoParaMensagem): string {
 
   const linhas: string[] = [];
   linhas.push("Pedido Val Salgados aceito! ✅");
-  linhas.push(`Acompanhe: ${EMPRESA.appUrl}/pedido/${pedido.numero}`);
+  linhas.push(`Acompanhe: ${EMPRESA.appUrl}/pedido/${pedido.token}`);
   linhas.push(`Pedido: #${pedido.numero} (${data})`);
   linhas.push(LINHA);
   linhas.push(`NOME: ${pedido.clienteNome}`);

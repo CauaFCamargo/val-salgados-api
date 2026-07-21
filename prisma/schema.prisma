@@ -15,6 +15,13 @@ model Pedido {
   numero   Int      @unique @default(autoincrement())
   criadoEm DateTime @default(now())
 
+  // Chave do link público de acompanhamento (/pedido/<token>).
+  // `numero` é sequencial e serve pra loja se organizar, mas justamente por ser
+  // previsível NÃO pode dar acesso: qualquer um contaria 1, 2, 3... e leria os
+  // pedidos alheios (IDOR). O token é aleatório e inviável de adivinhar.
+  // Gerado pelo banco (gen_random_uuid) pra as linhas antigas também receberem.
+  token String @unique @default(dbgenerated("gen_random_uuid()::text"))
+
   clienteNome String
   telefone    String
 

@@ -78,13 +78,17 @@ export async function criarPedido(req: Request, res: Response) {
 // Rota PÚBLICA: como o número é sequencial e "chutável", usamos `select` pra
 // devolver só o necessário — nada de telefone, endereço, troco (dados sensíveis).
 export async function buscarPedidoPublico(req: Request, res: Response) {
-  const numero = Number(req.params.numero);
-  if (Number.isNaN(numero)) {
-    return res.status(400).json({ erro: "Número inválido" });
+  // Busca pelo TOKEN, nunca pelo número. O número é sequencial: se ele desse
+  // acesso, bastaria contar 1, 2, 3... pra ler os pedidos de outras pessoas.
+  // No Express 5 um parâmetro pode vir repetido, então o tipo é
+  // `string | string[]`. Só aceitamos uma string única e não vazia.
+  const token = req.params.token;
+  if (typeof token !== "string" || token.trim() === "") {
+    return res.status(400).json({ erro: "Token inválido" });
   }
 
   const pedido = await prisma.pedido.findUnique({
-    where: { numero },
+    where: { token },
     select: {
       numero: true,
       status: true,
