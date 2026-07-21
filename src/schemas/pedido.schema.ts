@@ -65,3 +65,10 @@ export const STATUS_VALIDOS = [
 export const atualizarStatusSchema = z.object({
   status: z.enum(STATUS_VALIDOS),
 });
+
+// Corpo do PATCH /pedidos/:id/impresso. É OPCIONAL de propósito: o agente de
+// impressão chama a rota sem corpo nenhum (só quer dizer "imprimi"), enquanto o
+// painel manda { impresso: false } pra jogar o pedido de volta na fila.
+export const marcarImpressoSchema = z.object({
+  impresso: z.boolean().optional(),
+});

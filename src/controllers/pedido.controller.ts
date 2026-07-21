@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import {
   criarPedidoSchema,
   atualizarStatusSchema,
+  marcarImpressoSchema,
 } from "../schemas/pedido.schema";
 import { montarLinkWhatsapp } from "../services/whatsapp";
 import { calcularValores } from "../services/calculo";
@@ -137,10 +138,22 @@ export async function marcarImpresso(req: Request, res: Response) {
     return res.status(400).json({ erro: "id inválido" });
   }
 
+  const resultado = marcarImpressoSchema.safeParse(req.body ?? {});
+  if (!resultado.success) {
+    return res.status(400).json({
+      erro: "Dados inválidos",
+      detalhes: resultado.error.flatten().fieldErrors,
+    });
+  }
+
+  // Sem corpo → true. Isso mantém o agente de impressão funcionando igual
+  // (ele chama a rota sem corpo). O painel manda false pra reimprimir.
+  const impresso = resultado.data.impresso ?? true;
+
   try {
     const pedido = await prisma.pedido.update({
       where: { id },
-      data: { impresso: true },
+      data: { impresso },
     });
     return res.json({ id: pedido.id, impresso: pedido.impresso });
   } catch {
