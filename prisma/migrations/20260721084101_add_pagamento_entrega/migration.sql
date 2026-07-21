@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Pedido" ADD COLUMN     "formaPagamento" TEXT NOT NULL DEFAULT 'PIX',
+ADD COLUMN     "tipoEntrega" TEXT NOT NULL DEFAULT 'ENTREGA',
+ADD COLUMN     "trocoPara" DOUBLE PRECISION,
+ALTER COLUMN "endereco" DROP NOT NULL;

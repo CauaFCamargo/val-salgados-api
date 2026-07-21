@@ -1,0 +1,29 @@
+# Blueprint do Render: descreve a API como um serviço web em Docker.
+# No Render, "New +" → "Blueprint" e aponte pro repositório — ele lê este arquivo.
+services:
+  - type: web
+    name: val-salgados-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      # sync: false = o Render NÃO guarda no blueprint; você preenche no painel
+      # (são segredos ou dependem das outras plataformas).
+      - key: DATABASE_URL # connection string do Neon
+        sync: false
+      - key: JWT_SECRET # string longa e aleatória
+        sync: false
+      - key: ADMIN_USER # login do painel
+        sync: false
+      - key: ADMIN_PASSWORD # senha do painel
+        sync: false
+      - key: APP_URL # URL do front no Vercel (preenche depois)
+        sync: false
+      - key: CORS_ORIGIN # mesma URL do Vercel (preenche depois)
+        sync: false
+      # Opcionais (dados da empresa):
+      - key: PIX_KEY
+        sync: false
+      - key: WHATSAPP_NUMERO
+        sync: false

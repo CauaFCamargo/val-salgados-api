@@ -1,0 +1,56 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  // O projeto é CommonJS; sem isso o gerador emite ESM (import.meta) e o build
+  // com tsc + node quebra. Force CJS pra bater com o "type": "commonjs".
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Pedido {
+  id       Int      @id @default(autoincrement())
+  numero   Int      @unique @default(autoincrement())
+  criadoEm DateTime @default(now())
+
+  clienteNome String
+  telefone    String
+
+  // Entrega x Retirada: no RETIRADA não há endereço, por isso os campos
+  // de endereço são opcionais. Qual foi a escolha fica em `tipoEntrega`.
+  tipoEntrega String  @default("ENTREGA") // "ENTREGA" | "RETIRADA"
+  endereco    String?
+  bairro      String?
+  complemento String?
+
+  subtotal    Float
+  taxaEntrega Float @default(0)
+  desconto    Float @default(0)
+  total       Float
+
+  // Pagamento: PIX ou dinheiro. `trocoPara` só faz sentido no dinheiro
+  // (quanto o cliente vai pagar em espécie, pra calcular o troco).
+  formaPagamento String  @default("PIX") // "PIX" | "DINHEIRO"
+  trocoPara      Float?
+
+  status String @default("RECEBIDO")
+
+  // O agente de impressão da loja marca como true depois de imprimir o cupom.
+  // Garante que cada pedido seja impresso uma única vez.
+  impresso Boolean @default(false)
+
+  itens ItemPedido[]
+}
+
+model ItemPedido {
+  id Int @id @default(autoincrement())
+
+  nome          String
+  quantidade    Int
+  precoUnitario Float
+
+  pedido   Pedido @relation(fields: [pedidoId], references: [id])
+  pedidoId Int
+}
