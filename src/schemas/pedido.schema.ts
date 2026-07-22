@@ -96,9 +96,11 @@ export const criarPedidoSchema = z
 export type CriarPedidoInput = z.infer<typeof criarPedidoSchema>;
 
 // Status válidos de um pedido, na ordem do fluxo. CANCELADO é o desvio.
+// "EM_PRODUCAO" saiu do fluxo: o painel vai de Recebido direto pra Pronto.
+// Pedidos antigos que ficaram nesse status continuam válidos no banco (a
+// coluna é texto); ele só não pode mais ser DEFINIDO em ninguém.
 export const STATUS_VALIDOS = [
   "RECEBIDO",
-  "EM_PRODUCAO",
   "PRONTO",
   "ENTREGUE",
   "CANCELADO",
