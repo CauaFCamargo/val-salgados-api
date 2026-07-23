@@ -51,9 +51,11 @@ model Pedido {
 
   status String @default("RECEBIDO")
 
-  // O agente de impressão da loja marca como true depois de imprimir o cupom.
-  // Garante que cada pedido seja impresso uma única vez.
-  impresso Boolean @default(false)
+  // Fila de impressão (modo manual): `false` = "na fila, o agente vai imprimir";
+  // `true` = "fora da fila". O padrão é `true` de propósito — o pedido NÃO
+  // imprime sozinho ao chegar; a Val clica "Imprimir" no painel, o que põe
+  // `false`, o agente imprime e volta pra `true`.
+  impresso Boolean @default(true)
 
   itens ItemPedido[]
 }
