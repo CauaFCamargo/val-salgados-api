@@ -111,9 +111,10 @@ export const atualizarStatusSchema = z.object({
   status: z.enum(STATUS_VALIDOS),
 });
 
-// Corpo do PATCH /pedidos/:id/impresso. É OPCIONAL de propósito: o agente de
-// impressão chama a rota sem corpo nenhum (só quer dizer "imprimi"), enquanto o
-// painel manda { impresso: false } pra jogar o pedido de volta na fila.
-export const marcarImpressoSchema = z.object({
-  impresso: z.boolean().optional(),
+// Corpo do PATCH /pedidos/:id/impressao. Cada via é opcional e independente:
+// o painel manda { cliente: true } (ou { loja: true }) pra pôr aquela via na
+// fila; o agente manda { cliente: false } depois de imprimir aquela via.
+export const filaImpressaoSchema = z.object({
+  cliente: z.boolean().optional(),
+  loja: z.boolean().optional(),
 });

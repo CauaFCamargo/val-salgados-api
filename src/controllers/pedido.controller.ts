@@ -3,7 +3,7 @@ import { prisma } from "../lib/prisma";
 import {
   criarPedidoSchema,
   atualizarStatusSchema,
-  marcarImpressoSchema,
+  filaImpressaoSchema,
 } from "../schemas/pedido.schema";
 import { montarLinkWhatsapp } from "../services/whatsapp";
 import { calcularValores } from "../services/calculo";
@@ -149,15 +149,15 @@ export async function atualizarStatus(req: Request, res: Response) {
   }
 }
 
-// PATCH /pedidos/:id/impresso — o agente de impressão marca o pedido como
-// impresso depois de mandar o cupom. Rota protegida.
-export async function marcarImpresso(req: Request, res: Response) {
+// PATCH /pedidos/:id/impressao — põe/tira uma via da fila de impressão.
+// O painel usa pra pedir uma via; o agente usa pra dar baixa depois de imprimir.
+export async function atualizarFilaImpressao(req: Request, res: Response) {
   const id = Number(req.params.id);
   if (Number.isNaN(id)) {
     return res.status(400).json({ erro: "id inválido" });
   }
 
-  const resultado = marcarImpressoSchema.safeParse(req.body ?? {});
+  const resultado = filaImpressaoSchema.safeParse(req.body ?? {});
   if (!resultado.success) {
     return res.status(400).json({
       erro: "Dados inválidos",
@@ -165,16 +165,22 @@ export async function marcarImpresso(req: Request, res: Response) {
     });
   }
 
-  // Sem corpo → true. Isso mantém o agente de impressão funcionando igual
-  // (ele chama a rota sem corpo). O painel manda false pra reimprimir.
-  const impresso = resultado.data.impresso ?? true;
+  // Atualiza só as vias que vieram no corpo (cada uma é independente).
+  const data: { filaCliente?: boolean; filaLoja?: boolean } = {};
+  if (resultado.data.cliente !== undefined) data.filaCliente = resultado.data.cliente;
+  if (resultado.data.loja !== undefined) data.filaLoja = resultado.data.loja;
+
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ erro: "Informe a via (cliente e/ou loja)" });
+  }
 
   try {
-    const pedido = await prisma.pedido.update({
-      where: { id },
-      data: { impresso },
+    const pedido = await prisma.pedido.update({ where: { id }, data });
+    return res.json({
+      id: pedido.id,
+      filaCliente: pedido.filaCliente,
+      filaLoja: pedido.filaLoja,
     });
-    return res.json({ id: pedido.id, impresso: pedido.impresso });
   } catch {
     return res.status(404).json({ erro: "Pedido não encontrado" });
   }

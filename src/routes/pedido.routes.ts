@@ -4,7 +4,7 @@ import {
   listarPedidos,
   atualizarStatus,
   buscarPedidoPublico,
-  marcarImpresso,
+  atualizarFilaImpressao,
 } from "../controllers/pedido.controller";
 import { autenticar } from "../middlewares/auth";
 
@@ -18,4 +18,4 @@ pedidoRoutes.get("/:token", buscarPedidoPublico);
 // Protegidos (só a Val, com token): listar e mudar status.
 pedidoRoutes.get("/", autenticar, listarPedidos);
 pedidoRoutes.patch("/:id/status", autenticar, atualizarStatus);
-pedidoRoutes.patch("/:id/impresso", autenticar, marcarImpresso);
+pedidoRoutes.patch("/:id/impressao", autenticar, atualizarFilaImpressao);

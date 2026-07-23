@@ -51,11 +51,11 @@ model Pedido {
 
   status String @default("RECEBIDO")
 
-  // Fila de impressão (modo manual): `false` = "na fila, o agente vai imprimir";
-  // `true` = "fora da fila". O padrão é `true` de propósito — o pedido NÃO
-  // imprime sozinho ao chegar; a Val clica "Imprimir" no painel, o que põe
-  // `false`, o agente imprime e volta pra `true`.
-  impresso Boolean @default(true)
+  // Fila de impressão MANUAL, uma por via. `true` = essa via foi pedida e está
+  // na fila; o agente local imprime e devolve pra `false`. Padrão `false`:
+  // nada imprime sozinho — a Val clica "Via cliente" ou "Via loja" no painel.
+  filaCliente Boolean @default(false)
+  filaLoja    Boolean @default(false)
 
   itens ItemPedido[]
 }
